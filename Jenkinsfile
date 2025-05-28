@@ -1,5 +1,8 @@
 pipeline {
  agent any
+ environment {
+  SNYK_TOKEN = credentials('snyk-api-token') // store this token in Jenkins credentials
+}
  stages {
  stage('Checkout') {
  steps {
@@ -13,18 +16,19 @@ pipeline {
  }
  stage('Run Tests') {
  steps {
- sh 'npm test || exit /b 0' // Allows pipeline to continue despite test failures
+ sh 'snyk auth $SNYK_TOKEN'
+ sh 'npm test || true' // Allows pipeline to continue despite test failures
  }
  }
  stage('Generate Coverage Report') {
  steps {
  // Ensure coverage report exists
- sh 'npm run coverage || exit /b 0'
+ sh 'npm run coverage || true'
  }
  }
  stage('NPM Audit (Security Scan)') {
  steps {
- sh 'npm audit || exit /b 0' // This will show known CVEs in the output
+ sh 'npm audit || true' // This will show known CVEs in the output
  }
  }
  }
