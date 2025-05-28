@@ -1,8 +1,6 @@
 pipeline {
  agent any
- environment {
-  SNYK_TOKEN = credentials('snyk-api-token') // store this token in Jenkins credentials
-}
+ 
  stages {
  stage('Checkout') {
  steps {
@@ -16,7 +14,6 @@ pipeline {
  }
  stage('Run Tests') {
  steps {
- sh 'snyk auth $SNYK_TOKEN'
  sh 'npm test || true' // Allows pipeline to continue despite test failures
  }
  }
