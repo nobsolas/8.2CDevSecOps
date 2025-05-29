@@ -52,7 +52,7 @@ Check attached logs for more details.
                         currentBuild.result = 'UNSTABLE'
                     } finally {
                         emailext(
-                            to: 'your-email@example.com',
+                            to: 'nobsolas@gmail.com',
                             subject: "Security Scan Stage - ${scanStatus}",
                             body: """The 'Security Scan' stage completed with status: ${scanStatus}.
 
