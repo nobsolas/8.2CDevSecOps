@@ -13,10 +13,28 @@ pipeline {
  }
  }
  stage('Run Tests') {
- steps {
- sh 'npm test || true' // Allows pipeline to continue despite test failures
- }
- }
+            steps {
+                script {
+                    def testStatus = 'SUCCESS'
+                    try {
+                        sh 'npm test'
+                    } catch (err) {
+                        testStatus = 'FAILURE'
+                        currentBuild.result = 'UNSTABLE'
+                    } finally {
+                        emailext(
+                            to: 'nobsolas@gmail.com',
+                            subject: "Run Tests Stage - ${testStatus}",
+                            body: """The 'Run Tests' stage completed with status: ${testStatus}.
+
+Check attached logs for more details.
+""",
+                            attachLog: true
+                        )
+                    }
+                }
+            }
+        }
  stage('Generate Coverage Report') {
  steps {
  // Ensure coverage report exists
@@ -24,9 +42,27 @@ pipeline {
  }
  }
  stage('NPM Audit (Security Scan)') {
- steps {
- sh 'npm audit || true' // This will show known CVEs in the output
- }
- }
- }
+            steps {
+                script {
+                    def scanStatus = 'SUCCESS'
+                    try {
+                        sh 'npm audit'
+                    } catch (err) {
+                        scanStatus = 'FAILURE'
+                        currentBuild.result = 'UNSTABLE'
+                    } finally {
+                        emailext(
+                            to: 'your-email@example.com',
+                            subject: "Security Scan Stage - ${scanStatus}",
+                            body: """The 'Security Scan' stage completed with status: ${scanStatus}.
+
+Check attached logs for more details.
+""",
+                            attachLog: true
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
